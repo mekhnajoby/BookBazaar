@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}BookBazaar - Your Online Bookstore{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Discover Your Next<br>Great Read</h1>
+            <p>Explore thousands of books from various genres. From bestsellers to hidden gems, find the perfect book
+                for every moment.</p>
+            <div class="flex gap-3 justify-center">
+                <a href="{{ url_for('main.books') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-compass"></i>
+                    Browse Collection
+                </a>
+                {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-user-plus"></i>
+                    Join Now
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="container" style="margin-top: -2rem; position: relative; z-index: 10;">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-icon">📚</div>
+            <div class="stat-card-value">10K+</div>
+            <div class="stat-card-label">Books Available</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon">👥</div>
+            <div class="stat-card-value">5K+</div>
+            <div class="stat-card-label">Happy Customers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon">🏪</div>
+            <div class="stat-card-value">500+</div>
+            <div class="stat-card-label">Trusted Sellers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-icon">⭐</div>
+            <div class="stat-card-value">4.8</div>
+            <div class="stat-card-label">Average Rating</div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Books -->
+<section class="page-wrapper">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Books</h2>
+            <a href="{{ url_for('main.books') }}" class="btn btn-secondary btn-sm">
+                View All <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        {% if featured_books %}
+        <div class="grid grid-4">
+            {% for book in featured_books %}
+            <div class="card book-card">
+                <div class="book-card-image">
+                    {% if book.image_url %}
+                    <img src="{{ book.image_url }}" alt="{{ book.title }}">
+                    {% else %}
+                    <div
+                        style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);">
+                        <i class="fas fa-book" style="font-size: 3rem; color: white; opacity: 0.5;"></i>
+                    </div>
+                    {% endif %}
+                    {% if not book.is_in_stock() %}
+                    <span class="book-card-badge" style="background: var(--danger);">Out of Stock</span>
+                    {% elif book.stock_quantity < 5 %} <span class="book-card-badge">Low Stock</span>
+                        {% endif %}
+                </div>
+                <div class="book-card-content">
+                    <h3 class="book-card-title">{{ book.title }}</h3>
+                    <p class="book-card-author">by {{ book.author }}</p>
+                    {% if book.category %}
+                    <span class="badge badge-primary">{{ book.category.category_name }}</span>
+                    {% endif %}
+                    <div class="book-card-price">${{ "%.2f"|format(book.price) }}</div>
+                </div>
+                <div class="book-card-actions">
+                    <a href="{{ url_for('main.book_detail', book_id=book.id) }}" class="btn btn-secondary btn-sm"
+                        style="flex: 1;">
+                        View Details
+                    </a>
+                    {% if current_user.is_authenticated and book.is_in_stock() %}
+                    <form action="{{ url_for('customer.add_to_cart', book_id=book.id) }}" method="POST"
+                        style="flex: 1;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary btn-sm btn-block">
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h3 class="empty-state-title">No books available yet</h3>
+            <p class="empty-state-text">Check back soon for new arrivals!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section style="background: var(--bg-secondary); padding: 4rem 0;">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Browse by Category</h2>
+        </div>
+
+        <div class="grid grid-4">
+            {% for category in categories %}
+            <a href="{{ url_for('main.books', category=category.id) }}" class="card" style="text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">
+                    {% if 'Fiction' in category.category_name %}📖{% elif 'Science' in category.category_name %}🔬{%
+                    elif 'Business' in category.category_name %}💼{% elif 'Self-Help' in category.category_name %}🌟{%
+                    elif 'Children' in category.category_name %}👶{% elif 'Academic' in category.category_name %}🎓{%
+                    elif 'Comics' in category.category_name %}🦸{% else %}📚{% endif %}
+                </div>
+                <h4>{{ category.category_name }}</h4>
+                <p style="font-size: 0.875rem;">{{ category.books.count() }} books</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="page-wrapper text-center">
+    <div class="container">
+        <h2>Ready to Start Your Reading Journey?</h2>
+        <p style="max-width: 600px; margin: 0 auto 2rem;">Join thousands of book lovers who trust BookBazaar for their
+            literary adventures.</p>
+
+        <div class="flex gap-3 justify-center flex-wrap">
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+            </a>
+            <a href="{{ url_for('auth.register') }}?role=seller" class="btn btn-accent btn-lg">
+                <i class="fas fa-store"></i>
+                Become a Seller
+            </a>
+            {% else %}
+            <a href="{{ url_for('main.books') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-shopping-bag"></i>
+                Start Shopping
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

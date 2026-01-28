@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}My Books - BookBazaar{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <div class="flex justify-between items-center mb-4">
+            <h1>My Books</h1>
+            <a href="{{ url_for('seller.add_book') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Book</a>
+        </div>
+        {% if books.items %}
+        <div class="card">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books.items %}
+                        <tr>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>${{ "%.2f"|format(book.price) }}</td>
+                            <td>{{ book.stock_quantity }}</td>
+                            <td><span class="badge badge-{% if book.is_active %}success{% else %}danger{% endif %}">{%
+                                    if book.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                            <td class="flex gap-2">
+                                <a href="{{ url_for('seller.edit_book', book_id=book.id) }}"
+                                    class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+                                <form action="{{ url_for('seller.delete_book', book_id=book.id) }}" method="POST"
+                                    onsubmit="return confirm('Delete this book?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-danger"><i
+                                            class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <h3 class="empty-state-title">No books yet</h3>
+            <a href="{{ url_for('seller.add_book') }}" class="btn btn-primary">Add Your First Book</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

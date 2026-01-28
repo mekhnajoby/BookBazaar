@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Orders - BookBazaar Seller{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Orders</h1>
+        {% if orders.items %}
+        <div class="card">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Your Items</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders.items %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.customer.username }}</td>
+                            <td>{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{% for item in order.items if item.book_id in seller_book_ids %}{{ item.book.title }}
+                                (x{{ item.quantity }})<br>{% endfor %}</td>
+                            <td><span
+                                    class="badge badge-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% else %}info{% endif %}">{{
+                                    order.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <h3 class="empty-state-title">No orders yet</h3>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

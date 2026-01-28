@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Shopping Cart - BookBazaar{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Shopping Cart</h1>
+        {% if cart_items %}
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <div class="card">
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        {% if item.book.image_url %}<img src="{{ item.book.image_url }}" alt="{{ item.book.title }}">
+                        {% else %}<div
+                            style="display: flex; align-items: center; justify-content: center; height: 100%; background: var(--bg-secondary);">
+                            <i class="fas fa-book"></i></div>{% endif %}
+                    </div>
+                    <div class="cart-item-details">
+                        <h4 class="cart-item-title">{{ item.book.title }}</h4>
+                        <p class="cart-item-author">by {{ item.book.author }}</p>
+                        <form action="{{ url_for('customer.update_cart_item', item_id=item.id) }}" method="POST"
+                            class="flex gap-2 items-center">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                                max="{{ item.book.stock_quantity }}" class="form-control" style="width: 80px;">
+                            <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                        </form>
+                    </div>
+                    <div class="cart-item-price">
+                        <p class="cart-item-unit-price">${{ "%.2f"|format(item.book.price) }} each</p>
+                        <p class="cart-item-total">${{ "%.2f"|format(item.get_subtotal()) }}</p>
+                        <form action="{{ url_for('customer.remove_from_cart', item_id=item.id) }}" method="POST"
+                            class="mt-2">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="cart-summary">
+                <h3 class="mb-3">Order Summary</h3>
+                <div class="cart-summary-row"><span>Subtotal</span><span>${{ "%.2f"|format(total) }}</span></div>
+                <div class="cart-summary-row"><span>Shipping</span><span class="text-success">Free</span></div>
+                <div class="cart-summary-row cart-summary-total"><span>Total</span><span>${{ "%.2f"|format(total)
+                        }}</span></div>
+                <a href="{{ url_for('customer.checkout') }}" class="btn btn-primary btn-block btn-lg mt-3"><i
+                        class="fas fa-credit-card"></i> Checkout</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🛒</div>
+            <h3 class="empty-state-title">Your cart is empty</h3>
+            <p class="empty-state-text">Add some books to get started!</p>
+            <a href="{{ url_for('main.books') }}" class="btn btn-primary">Browse Books</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

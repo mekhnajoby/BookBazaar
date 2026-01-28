@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Register - BookBazaar{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join BookBazaar today</p>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Choose a username" required
+                    minlength="3">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Create a password" required
+                    minlength="6">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="confirm_password" class="form-control" placeholder="Confirm your password"
+                    required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Account Type</label>
+                <select name="role" class="form-control">
+                    <option value="customer">Customer - Browse and purchase books</option>
+                    <option value="seller">Seller - Sell books on our platform</option>
+                </select>
+                <span class="form-text">Seller accounts require admin approval</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Address (Optional)</label>
+                <textarea name="address" class="form-control" placeholder="Your shipping address" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone (Optional)</label>
+                <input type="tel" name="phone" class="form-control" placeholder="Your phone number">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+        </form>
+        <p class="auth-footer">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+    </div>
+</div>
+{% endblock %}

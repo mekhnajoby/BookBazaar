@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Categories - BookBazaar Admin{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Manage Categories</h1>
+        <div class="grid grid-2" style="gap: 2rem;">
+            <div class="card">
+                <h3 class="mb-3">Add New Category</h3>
+                <form action="{{ url_for('admin.add_category') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group"><label class="form-label">Name</label><input type="text"
+                            name="category_name" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">Description</label><textarea name="description"
+                            class="form-control" rows="2"></textarea></div>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3 class="mb-3">Existing Categories</h3>
+                {% for category in categories %}
+                <div class="flex justify-between items-center mb-2 pb-2"
+                    style="border-bottom: 1px solid var(--border-color);">
+                    <div><strong>{{ category.category_name }}</strong><br><small class="text-muted">{{
+                            category.books.count() }} books</small></div>
+                    <form action="{{ url_for('admin.delete_category', category_id=category.id) }}" method="POST"
+                        onsubmit="return confirm('Delete this category?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

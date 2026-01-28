@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users - BookBazaar Admin{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Manage Users</h1>
+        <div class="card mb-4">
+            <form class="flex gap-3 items-center" method="GET">
+                <select name="role" class="form-control" style="width: 150px;">
+                    <option value="">All Roles</option>
+                    <option value="customer" {% if current_role=='customer' %}selected{% endif %}>Customer</option>
+                    <option value="seller" {% if current_role=='seller' %}selected{% endif %}>Seller</option>
+                    <option value="admin" {% if current_role=='admin' %}selected{% endif %}>Admin</option>
+                </select>
+                <input type="text" name="search" class="form-control" placeholder="Search users..."
+                    value="{{ search }}">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users.items %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td><span
+                                    class="badge badge-{% if user.role == 'admin' %}danger{% elif user.role == 'seller' %}warning{% else %}info{% endif %}">{{
+                                    user.role }}</span></td>
+                            <td><span class="badge badge-{% if user.is_active %}success{% else %}danger{% endif %}">{%
+                                    if user.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                            <td>
+                                <form action="{{ url_for('admin.toggle_user', user_id=user.id) }}" method="POST"
+                                    style="display: inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-{% if user.is_active %}danger{% else %}success{% endif %}">{%
+                                        if user.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

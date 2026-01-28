@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Profile - BookBazaar{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 600px;">
+        <h1 class="mb-4">My Profile</h1>
+        <div class="card">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" value="{{ current_user.username }}"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ current_user.email }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" class="form-control" rows="2">{{ current_user.address or '' }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" name="phone" class="form-control" value="{{ current_user.phone or '' }}">
+                </div>
+                <hr style="border-color: var(--border-color); margin: 1.5rem 0;">
+                <h4>Change Password</h4>
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" name="current_password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" name="new_password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

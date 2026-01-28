@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Checkout - BookBazaar{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Checkout</h1>
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+            <div class="card">
+                <h3 class="mb-3">Shipping Information</h3>
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label class="form-label">Shipping Address *</label>
+                        <textarea name="shipping_address" class="form-control" rows="3"
+                            required>{{ current_user.address or '' }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payment Method</label>
+                        <select name="payment_method" class="form-control">
+                            <option value="cod">Cash on Delivery</option>
+                            <option value="card">Credit/Debit Card</option>
+                            <option value="upi">UPI</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Order Notes (Optional)</label>
+                        <textarea name="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-check"></i> Place
+                        Order</button>
+                </form>
+            </div>
+            <div class="cart-summary">
+                <h3 class="mb-3">Order Summary</h3>
+                {% for item in cart_items %}
+                <div class="flex justify-between mb-2">
+                    <span>{{ item.book.title[:30] }}{% if item.book.title|length > 30 %}...{% endif %} x{{ item.quantity
+                        }}</span>
+                    <span>${{ "%.2f"|format(item.get_subtotal()) }}</span>
+                </div>
+                {% endfor %}
+                <hr style="border-color: var(--border-color); margin: 1rem 0;">
+                <div class="cart-summary-row cart-summary-total"><span>Total</span><span>${{ "%.2f"|format(total)
+                        }}</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

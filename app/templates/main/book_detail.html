@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{{ book.title }} - BookBazaar{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 3rem;">
+            <div class="book-card-image" style="aspect-ratio: 3/4; height: fit-content;">
+                {% if book.image_url %}
+                <img src="{{ book.image_url }}" alt="{{ book.title }}"
+                    style="width: 100%; border-radius: var(--radius-lg);">
+                {% else %}
+                <div
+                    style="display: flex; align-items: center; justify-content: center; height: 400px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: var(--radius-lg);">
+                    <i class="fas fa-book" style="font-size: 5rem; color: white; opacity: 0.5;"></i>
+                </div>
+                {% endif %}
+            </div>
+            <div>
+                <h1>{{ book.title }}</h1>
+                <p style="font-size: 1.25rem; color: var(--text-secondary);">by {{ book.author }}</p>
+                {% if book.category %}<span class="badge badge-primary mb-3">{{ book.category.category_name }}</span>{%
+                endif %}
+                <div style="font-size: 2rem; font-weight: 700; color: var(--accent); margin: 1.5rem 0;">${{
+                    "%.2f"|format(book.price) }}</div>
+                <p>{{ book.description or 'No description available.' }}</p>
+                <div class="card mt-4">
+                    <div class="flex gap-4 flex-wrap">
+                        <div><strong>Publisher:</strong> {{ book.publisher or 'N/A' }}</div>
+                        <div><strong>Genre:</strong> {{ book.genre or 'N/A' }}</div>
+                        <div><strong>ISBN:</strong> {{ book.isbn or 'N/A' }}</div>
+                        <div><strong>Stock:</strong> {% if book.is_in_stock() %}<span class="text-success">{{
+                                book.stock_quantity }} available</span>{% else %}<span class="text-danger">Out of
+                                Stock</span>{% endif %}</div>
+                    </div>
+                </div>
+                {% if current_user.is_authenticated and book.is_in_stock() %}
+                <form action="{{ url_for('customer.add_to_cart', book_id=book.id) }}" method="POST" class="mt-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="flex gap-3 items-center">
+                        <input type="number" name="quantity" value="1" min="1" max="{{ book.stock_quantity }}"
+                            class="form-control" style="width: 100px;">
+                        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-cart-plus"></i> Add to
+                            Cart</button>
+                    </div>
+                </form>
+                {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg mt-4">Login to Purchase</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

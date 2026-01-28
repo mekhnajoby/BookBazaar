@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BookBazaar - Your premier online destination for books. Browse, purchase, and manage your book orders with ease.">
+    <title>{% block title %}BookBazaar{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('main.index') }}" class="navbar-brand">
+                <i class="fas fa-book-open"></i>
+                <span>BookBazaar</span>
+            </a>
+            
+            <button class="nav-toggle" onclick="toggleNav()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="navbar-search">
+                <form class="search-form" action="{{ url_for('main.search') }}" method="GET">
+                    <input type="text" name="q" placeholder="Search for books, authors..." value="{{ request.args.get('q', '') }}">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            
+            <ul class="navbar-nav" id="navbarNav">
+                <li><a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('main.books') }}" class="nav-link {% if request.endpoint == 'main.books' %}active{% endif %}">Books</a></li>
+                
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin() %}
+                        <li><a href="{{ url_for('admin.dashboard') }}" class="nav-link">Admin</a></li>
+                    {% elif current_user.is_seller() %}
+                        <li><a href="{{ url_for('seller.dashboard') }}" class="nav-link">Seller Dashboard</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('customer.dashboard') }}" class="nav-link">My Account</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+            
+            <div class="navbar-actions">
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_customer() or current_user.is_admin() %}
+                        <a href="{{ url_for('customer.cart') }}" class="cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                            {% if current_user.cart and current_user.cart.get_item_count() > 0 %}
+                                <span class="cart-badge">{{ current_user.cart.get_item_count() }}</span>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-user"></i>
+                        {{ current_user.username }}
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline btn-sm">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-sm">Login</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-brand">
+                        <i class="fas fa-book-open"></i>
+                        <span>BookBazaar</span>
+                    </div>
+                    <p class="footer-description">
+                        Your premier online destination for books. Discover, explore, and purchase from our vast collection of literary treasures.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('main.index') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.books') }}">Browse Books</a></li>
+                        <li><a href="{{ url_for('main.about') }}">About Us</a></li>
+                        <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="footer-title">Categories</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('main.books') }}?category=1">Fiction</a></li>
+                        <li><a href="{{ url_for('main.books') }}?category=2">Non-Fiction</a></li>
+                        <li><a href="{{ url_for('main.books') }}?category=3">Science</a></li>
+                        <li><a href="{{ url_for('main.books') }}?category=4">Business</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="footer-title">Connect</h4>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 BookBazaar. All rights reserved. Built with ❤️ for book lovers.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        function toggleNav() {
+            document.getElementById('navbarNav').classList.toggle('active');
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

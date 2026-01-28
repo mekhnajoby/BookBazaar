@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard - BookBazaar{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Welcome, {{ current_user.username }}!</h1>
+        <div class="stats-grid mb-5">
+            <div class="stat-card">
+                <div class="stat-card-icon">📦</div>
+                <div class="stat-card-value">{{ recent_orders|length }}</div>
+                <div class="stat-card-label">Recent Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon">🛒</div>
+                <div class="stat-card-value">{{ cart_count }}</div>
+                <div class="stat-card-label">Items in Cart</div>
+            </div>
+        </div>
+        <div class="flex gap-3 mb-4">
+            <a href="{{ url_for('customer.cart') }}" class="btn btn-primary"><i class="fas fa-shopping-cart"></i> My
+                Cart</a>
+            <a href="{{ url_for('customer.orders') }}" class="btn btn-secondary"><i class="fas fa-box"></i> Order
+                History</a>
+            <a href="{{ url_for('main.books') }}" class="btn btn-secondary"><i class="fas fa-book"></i> Browse Books</a>
+        </div>
+        <div class="card">
+            <h3 class="mb-3">Recent Orders</h3>
+            {% if recent_orders %}
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in recent_orders %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+                            <td>${{ "%.2f"|format(order.total_price) }}</td>
+                            <td><span
+                                    class="badge badge-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% else %}info{% endif %}">{{
+                                    order.status }}</span></td>
+                            <td><a href="{{ url_for('customer.order_detail', order_id=order.id) }}"
+                                    class="btn btn-sm btn-secondary">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No orders yet. <a href="{{ url_for('main.books') }}">Start shopping!</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

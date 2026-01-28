@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}All Books - BookBazaar Admin{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">All Books</h1>
+        <div class="card mb-4">
+            <form class="flex gap-3" method="GET">
+                <select name="category" class="form-control" style="width: 200px;">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}<option value="{{ cat.id }}" {% if current_category==cat.id %}selected{%
+                        endif %}>{{ cat.category_name }}</option>{% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Seller</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books.items %}
+                        <tr>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.seller.username }}</td>
+                            <td>${{ "%.2f"|format(book.price) }}</td>
+                            <td>{{ book.stock_quantity }}</td>
+                            <td><span class="badge badge-{% if book.is_active %}success{% else %}danger{% endif %}">{%
+                                    if book.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

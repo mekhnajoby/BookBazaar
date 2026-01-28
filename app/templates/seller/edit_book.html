@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Edit Book - BookBazaar{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container" style="max-width: 800px;">
+        <h1 class="mb-4">Edit Book</h1>
+        <div class="card">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="grid grid-2">
+                    <div class="form-group"><label class="form-label">Title</label><input type="text" name="title"
+                            class="form-control" value="{{ book.title }}" required></div>
+                    <div class="form-group"><label class="form-label">Author</label><input type="text" name="author"
+                            class="form-control" value="{{ book.author }}" required></div>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group"><label class="form-label">Price ($)</label><input type="number" name="price"
+                            class="form-control" value="{{ book.price }}" step="0.01" min="0.01" required></div>
+                    <div class="form-group"><label class="form-label">Stock</label><input type="number"
+                            name="stock_quantity" class="form-control" value="{{ book.stock_quantity }}" min="0"
+                            required></div>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group"><label class="form-label">Category</label><select name="category_id"
+                            class="form-control">{% for cat in categories %}<option value="{{ cat.id }}" {% if
+                                book.category_id==cat.id %}selected{% endif %}>{{ cat.category_name }}</option>{% endfor
+                            %}</select></div>
+                    <div class="form-group"><label class="form-label">Genre</label><input type="text" name="genre"
+                            class="form-control" value="{{ book.genre or '' }}"></div>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group"><label class="form-label">Publisher</label><input type="text"
+                            name="publisher" class="form-control" value="{{ book.publisher or '' }}"></div>
+                    <div class="form-group"><label class="form-label">Publication Date</label><input type="date"
+                            name="publication_date" class="form-control"
+                            value="{{ book.publication_date.strftime('%Y-%m-%d') if book.publication_date else '' }}">
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-label">ISBN</label><input type="text" name="isbn"
+                        class="form-control" value="{{ book.isbn or '' }}"></div>
+                <div class="form-group"><label class="form-label">Image URL</label><input type="url" name="image_url"
+                        class="form-control" value="{{ book.image_url or '' }}"></div>
+                <div class="form-group"><label class="form-label">Description</label><textarea name="description"
+                        class="form-control" rows="4">{{ book.description or '' }}</textarea></div>
+                <div class="form-group"><label class="form-check"><input type="checkbox" name="is_active"
+                            class="form-check-input" {% if book.is_active %}checked{% endif %}><span>Active (visible to
+                            customers)</span></label></div>
+                <div class="flex gap-3">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{{ url_for('seller.books') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

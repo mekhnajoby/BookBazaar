@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Inventory - BookBazaar Seller{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Inventory Management</h1>
+        {% if low_stock %}
+        <div class="alert alert-warning mb-4"><i class="fas fa-exclamation-triangle"></i> {{ low_stock|length }} book(s)
+            with low stock (less than 5)</div>
+        {% endif %}
+        <div class="card">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Current Stock</th>
+                            <th>Update Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr class="{% if book.stock_quantity < 5 %}text-warning{% endif %}">
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.stock_quantity }}</td>
+                            <td>
+                                <form action="{{ url_for('seller.update_stock', book_id=book.id) }}" method="POST"
+                                    class="flex gap-2">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="number" name="stock_quantity" value="{{ book.stock_quantity }}" min="0"
+                                        class="form-control" style="width: 100px;">
+                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

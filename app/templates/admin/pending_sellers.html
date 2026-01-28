@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Pending Sellers - BookBazaar Admin{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">Pending Seller Approvals</h1>
+        {% if sellers %}
+        <div class="card">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for seller in sellers %}
+                        <tr>
+                            <td>{{ seller.username }}</td>
+                            <td>{{ seller.email }}</td>
+                            <td>{{ seller.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td class="flex gap-2">
+                                <form action="{{ url_for('admin.approve_seller', user_id=seller.id) }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-check"></i>
+                                        Approve</button>
+                                </form>
+                                <form action="{{ url_for('admin.reject_seller', user_id=seller.id) }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-times"></i>
+                                        Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">✅</div>
+            <h3 class="empty-state-title">No pending approvals</h3>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

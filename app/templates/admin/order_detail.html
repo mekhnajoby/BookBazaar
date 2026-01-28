@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Order {{ order.order_number }} - BookBazaar Admin{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <a href="{{ url_for('admin.orders') }}" class="btn btn-secondary btn-sm mb-3"><i class="fas fa-arrow-left"></i>
+            Back</a>
+        <div class="flex justify-between items-center mb-4">
+            <h1>Order {{ order.order_number }}</h1>
+            <form action="{{ url_for('admin.update_order_status', order_id=order.id) }}" method="POST"
+                class="flex gap-2">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="status" class="form-control">
+                    <option value="pending" {% if order.status=='pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if order.status=='confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="shipped" {% if order.status=='shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="delivered" {% if order.status=='delivered' %}selected{% endif %}>Delivered</option>
+                    <option value="cancelled" {% if order.status=='cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </form>
+        </div>
+        <div class="grid grid-2">
+            <div class="card">
+                <h3 class="mb-3">Order Items</h3>
+                {% for item in order.items %}
+                <div class="flex justify-between mb-2 pb-2" style="border-bottom: 1px solid var(--border-color);">
+                    <span>{{ item.book.title }} x{{ item.quantity }}</span>
+                    <span>${{ "%.2f"|format(item.get_subtotal()) }}</span>
+                </div>
+                {% endfor %}
+                <div class="flex justify-between mt-3" style="font-size: 1.25rem; font-weight: 600;">
+                    <span>Total</span>
+                    <span>${{ "%.2f"|format(order.total_price) }}</span>
+                </div>
+            </div>
+            <div>
+                <div class="card mb-3">
+                    <h4>Customer</h4>
+                    <p>{{ order.customer.username }}<br>{{ order.customer.email }}</p>
+                </div>
+                <div class="card">
+                    <h4>Shipping Address</h4>
+                    <p style="white-space: pre-line;">{{ order.shipping_address }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

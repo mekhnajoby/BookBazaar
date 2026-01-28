@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}All Orders - BookBazaar Admin{% endblock %}
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="mb-4">All Orders</h1>
+        <div class="card mb-4">
+            <form class="flex gap-3" method="GET">
+                <select name="status" class="form-control" style="width: 150px;">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if current_status=='pending' %}selected{% endif %}>Pending</option>
+                    <option value="confirmed" {% if current_status=='confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="shipped" {% if current_status=='shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="delivered" {% if current_status=='delivered' %}selected{% endif %}>Delivered</option>
+                    <option value="cancelled" {% if current_status=='cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+        </div>
+        <div class="card">
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders.items %}
+                        <tr>
+                            <td>{{ order.order_number }}</td>
+                            <td>{{ order.customer.username }}</td>
+                            <td>{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+                            <td>${{ "%.2f"|format(order.total_price) }}</td>
+                            <td><span
+                                    class="badge badge-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% else %}info{% endif %}">{{
+                                    order.status }}</span></td>
+                            <td><a href="{{ url_for('admin.order_detail', order_id=order.id) }}"
+                                    class="btn btn-sm btn-secondary">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
