@@ -16,7 +16,7 @@ REGION = os.environ.get('AWS_REGION', 'us-east-1')
 dynamodb = boto3.resource('dynamodb', region_name=REGION)
 sns = boto3.client('sns', region_name=REGION)
 
-SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC_ARN')
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:396913725265:book_bazaar_topic:ef6718d7-9106-42cb-87ba-69325bf3031f'
 
 # Tables
 users_table = dynamodb.Table(os.environ.get('DYNAMODB_USERS_TABLE', 'Users'))
